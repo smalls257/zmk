@@ -19,8 +19,6 @@ jobs:
       matrix:
         board:
           - nice_nano_v2
-          - nrfmicro_13
-          - proton_c
         shield:
           - settings_reset
           - sofle_left
@@ -68,7 +66,7 @@ jobs:
           echo ::set-output name=shield-arg::${SHIELD_ARG}
           echo ::set-output name=artifact-name::${ARTIFACT_NAME}
       - name: Build (west build)
-        run: west build -pristine -s app -b ${{ matrix.board }} -- ${{ steps.variables.outputs.shield-arg }} ${{ matrix.cmake-args }}
+        run: west build --pristine -s app -b ${{ matrix.board }} -- ${{ steps.variables.outputs.shield-arg }} ${{ matrix.cmake-args }}
       - name: Archive artifacts
         if: ${{ !matrix.skip-archive }}
         uses: actions/upload-artifact@v2

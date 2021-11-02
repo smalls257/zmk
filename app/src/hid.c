@@ -15,6 +15,9 @@ static struct zmk_hid_keyboard_report keyboard_report = {
 
 static struct zmk_hid_consumer_report consumer_report = {.report_id = 2, .body = {.keys = {0}}};
 
+static struct zmk_hid_mouse_report mouse_report = {
+    .report_id = 4, .body = {.buttons = 0, .x = 0, .y = 0, .scroll_x = 0, .scroll_y = 0}};
+
 // Keep track of how often a modifier was pressed.
 // Only release the modifier if the count is 0.
 static int explicit_modifier_counts[8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -69,30 +72,8 @@ int zmk_hid_unregister_mods(zmk_mod_flags_t modifiers) {
     return 0;
 }
 
-#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_NKRO)
-
-#define TOGGLE_KEYBOARD(code, val) WRITE_BIT(keyboard_report.body.keys[code / 8], code % 8, val)
-
-static inline int select_keyboard_usage(zmk_key_t usage) {
-    if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
-        return -EINVAL;
-    }
-    TOGGLE_KEYBOARD(usage, 1);
-    return 0;
-}
-
-static inline int deselect_keyboard_usage(zmk_key_t usage) {
-    if (usage > ZMK_HID_KEYBOARD_NKRO_MAX_USAGE) {
-        return -EINVAL;
-    }
-    TOGGLE_KEYBOARD(usage, 0);
-    return 0;
-}
-
-#elif IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO)
-
 #define TOGGLE_KEYBOARD(match, val)                                                                \
-    for (int idx = 0; idx < CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE; idx++) {                          \
+    for (int idx = 0; idx < ZMK_HID_KEYBOARD_NKRO_SIZE; idx++) {                                   \
         if (keyboard_report.body.keys[idx] != match) {                                             \
             continue;                                                                              \
         }                                                                                          \
@@ -102,24 +83,8 @@ static inline int deselect_keyboard_usage(zmk_key_t usage) {
         }                                                                                          \
     }
 
-static inline int select_keyboard_usage(zmk_key_t usage) {
-    TOGGLE_KEYBOARD(0U, usage);
-    return 0;
-}
-
-static inline int deselect_keyboard_usage(zmk_key_t usage) {
-    TOGGLE_KEYBOARD(usage, 0U);
-    return 0;
-}
-
-#else
-#error "A proper HID report type must be selected"
-#endif
-
 #define TOGGLE_CONSUMER(match, val)                                                                \
-    COND_CODE_1(IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_BASIC),                           \
-                (if (val > 0xFF) { return -ENOTSUP; }), ())                                        \
-    for (int idx = 0; idx < CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE; idx++) {                          \
+    for (int idx = 0; idx < ZMK_HID_CONSUMER_NKRO_SIZE; idx++) {                                   \
         if (consumer_report.body.keys[idx] != match) {                                             \
             continue;                                                                              \
         }                                                                                          \
@@ -143,7 +108,7 @@ int zmk_hid_keyboard_press(zmk_key_t code) {
     if (code >= HID_USAGE_KEY_KEYBOARD_LEFTCONTROL && code <= HID_USAGE_KEY_KEYBOARD_RIGHT_GUI) {
         return zmk_hid_register_mod(code - HID_USAGE_KEY_KEYBOARD_LEFTCONTROL);
     }
-    select_keyboard_usage(code);
+    TOGGLE_KEYBOARD(0U, code);
     return 0;
 };
 
@@ -151,7 +116,7 @@ int zmk_hid_keyboard_release(zmk_key_t code) {
     if (code >= HID_USAGE_KEY_KEYBOARD_LEFTCONTROL && code <= HID_USAGE_KEY_KEYBOARD_RIGHT_GUI) {
         return zmk_hid_unregister_mod(code - HID_USAGE_KEY_KEYBOARD_LEFTCONTROL);
     }
-    deselect_keyboard_usage(code);
+    TOGGLE_KEYBOARD(code, 0U);
     return 0;
 };
 
@@ -169,10 +134,93 @@ int zmk_hid_consumer_release(zmk_key_t code) {
 
 void zmk_hid_consumer_clear() { memset(&consumer_report.body, 0, sizeof(consumer_report.body)); }
 
+// Keep track of how often a button was pressed.
+// Only release the button if the count is 0.
+static int explicit_button_counts[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static zmk_mod_flags_t explicit_buttons = 0;
+
+#define SET_MOUSE_BUTTONS(btns)                                                                    \
+    {                                                                                              \
+        mouse_report.body.buttons = btns;                                                          \
+        LOG_DBG("Mouse buttons set to 0x%02X", mouse_report.body.buttons);                         \
+    }
+
+int zmk_hid_mouse_button_press(zmk_mouse_button_t button) {
+    explicit_button_counts[button]++;
+    LOG_DBG("Button %d count %d", button, explicit_button_counts[button]);
+    WRITE_BIT(explicit_buttons, button, true);
+    SET_MOUSE_BUTTONS(explicit_buttons);
+    return 0;
+}
+
+int zmk_hid_mouse_button_release(zmk_mouse_button_t button) {
+    if (explicit_button_counts[button] <= 0) {
+        LOG_ERR("Tried to release button %d too often", button);
+        return -EINVAL;
+    }
+    explicit_button_counts[button]--;
+    LOG_DBG("Button %d count: %d", button, explicit_button_counts[button]);
+    if (explicit_button_counts[button] == 0) {
+        LOG_DBG("Button %d released", button);
+        WRITE_BIT(explicit_buttons, button, false);
+    }
+    SET_MOUSE_BUTTONS(explicit_buttons);
+    return 0;
+}
+
+int zmk_hid_mouse_buttons_press(zmk_mouse_button_flags_t buttons) {
+    for (zmk_mod_t i = 0; i < 16; i++) {
+        if (buttons & (1 << i)) {
+            zmk_hid_mouse_button_press(i);
+        }
+    }
+    return 0;
+}
+
+int zmk_hid_mouse_buttons_release(zmk_mouse_button_flags_t buttons) {
+    for (zmk_mod_t i = 0; i < 16; i++) {
+        if (buttons & (1 << i)) {
+            zmk_hid_mouse_button_release(i);
+        }
+    }
+    return 0;
+}
+
+void zmk_hid_mouse_movement_set(int16_t x, int16_t y) {
+    mouse_report.body.x = x;
+    mouse_report.body.y = y;
+    LOG_DBG("Mouse movement set to 0x%02X 0x%02X ", mouse_report.body.x, mouse_report.body.y);
+}
+
+void zmk_hid_mouse_movement_update(int16_t x, int16_t y) {
+    mouse_report.body.x += x;
+    mouse_report.body.y += y;
+    LOG_DBG("Mouse movement updated to 0x%02X 0x%02X ", mouse_report.body.x, mouse_report.body.y);
+}
+
+void zmk_hid_mouse_scroll_set(int8_t x, int8_t y) {
+    mouse_report.body.scroll_x = x;
+    mouse_report.body.scroll_y = y;
+    LOG_DBG("Mouse scroll set to 0x%02X 0x%02X ", mouse_report.body.scroll_x,
+            mouse_report.body.scroll_y);
+}
+
+void zmk_hid_mouse_scroll_update(int8_t x, int8_t y) {
+    mouse_report.body.scroll_x += x;
+    mouse_report.body.scroll_y += y;
+    LOG_DBG("Mouse scroll updated to 0x%02X 0x%02X ", mouse_report.body.scroll_x,
+            mouse_report.body.scroll_y);
+}
+void zmk_hid_mouse_clear() { memset(&mouse_report.body, 0, sizeof(mouse_report.body)); }
+
 struct zmk_hid_keyboard_report *zmk_hid_get_keyboard_report() {
     return &keyboard_report;
 }
 
 struct zmk_hid_consumer_report *zmk_hid_get_consumer_report() {
     return &consumer_report;
+}
+
+struct zmk_hid_mouse_report *zmk_hid_get_mouse_report() {
+    return &mouse_report;
 }

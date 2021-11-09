@@ -10,6 +10,19 @@
 #include <dt-bindings/zmk/rgb.h>
 #include <dt-bindings/zmk/mouse.h>
 
+
+&mmv {
+    delay-ms = <0>;
+    acceleration-exponent=<1>;
+    time-to-max-speed-ms = <2000>;
+};
+
+&mwh {
+    delay-ms = <0>;
+    acceleration-exponent=<1>;
+    time-to-max-speed-ms = <100>;
+};
+
 / {
     keymap {
         compatible = "zmk,keymap";
@@ -75,7 +88,7 @@
                 mouse {
                         bindings = <
 &trans    &trans  &trans  &trans  &trans  &trans                  &trans  &trans &trans &trans  &trans &trans 
-&trans	  &trans  &trans  &trans  &trans  &trans                  &trans  &trans &trans &trans  &trans &trans 
+&trans	  &trans  &trans  &trans  &trans  &trans                  &mmv MOVE_HOR(-3000)  &trans &trans &trans  &trans &trans 
 &trans    &trans  &trans  &trans  &trans  &trans                  &trans  &trans &trans &trans  &trans &trans 
 &trans    &trans  &trans  &trans  &trans  &trans  &trans   &trans &trans  &trans &trans &trans  &trans &trans
                     &trans    &trans      &trans    &trans    &trans   &trans &trans    &trans   &trans          &trans

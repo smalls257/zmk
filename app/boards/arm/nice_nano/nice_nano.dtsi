@@ -46,6 +46,12 @@
 	compatible = "nordic,nrf-twi";
 	sda-pin = <17>;
 	scl-pin = <20>;
+	
+	pim447_trackball@a {
+		compatible = "pimoroni,pim447_trackball";
+		reg = <0x0A>;
+		label = "PIM447_TRACKBALL";
+	};
 };
 
 &uart0 {

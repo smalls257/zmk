@@ -3,6 +3,5 @@
 
 config ZMK_PIM447_TRACKBALL
 	bool "ZMK PIM447 trackball"
-	depends on I2C
 	help
 	  Enable I2C-based driver for Pimorono PIM447 trackball.

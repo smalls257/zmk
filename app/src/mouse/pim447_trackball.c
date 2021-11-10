@@ -45,7 +45,8 @@ static void thread_code(void *p1, void *p2, void *p3)
     int result;
 
     /* PIM447 trackball initialization. */
-    dev =device_get_binding(DT_INST_BUS_LABEL(0));
+     const char *label = DT_INST_BUS_LABEL(0);
+    dev = device_get_binding(label);
     if (dev == NULL) {
         LOG_ERR("Cannot get PIM447_TRACKBALL device");
         return;

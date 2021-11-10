@@ -86,6 +86,12 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
         com-sequential;
         prechargep = <0x22>;
     };
+    
+	pim447_trackball@a {
+		compatible = "pimoroni,pim447_trackball";
+		reg = <0xa>;
+		label = "PIM447_TRACKBALL";
+	};
 };
 
 
@@ -110,6 +116,13 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
 		spi-one-frame = <0x70>;
 		spi-zero-frame = <0x40>;
 	};
+	
+	
+	pim447_trackball@a {
+		compatible = "pimoroni,pim447_trackball";
+		reg = <0xa>;
+		label = "PIM447_TRACKBALL";
+	};
 };
 
 &i2c1 {
@@ -120,6 +133,9 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
 		reg = <0xa>;
 		label = "PIM447_TRACKBALL";
 	};
+	
+};
+
 / {
 	chosen {
 		zmk,underglow = &led_strip;

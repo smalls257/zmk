@@ -6,6 +6,7 @@
 #include <zephyr.h>
 #include <device.h>
 #include <devicetree.h>
+#include <zmk/mouse.h>
 
 #include <drivers/sensor.h>
 #include <logging/log.h>

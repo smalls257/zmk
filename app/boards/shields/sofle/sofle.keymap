@@ -12,31 +12,6 @@
 
 
 
-&mmv {
-    time-to-max-speed-ms = <600>;
-    acceleration-exponent = <1>;
-};
-
-&mwh {
-    time-to-max-speed-ms = <2500>;
-    acceleration-exponent = <0>;
-};
-
-#define U_MOUSE_MOVE_MAX 1250
-#define U_MOUSE_SCROLL_MAX 12
-
-#define U_MOUSE_MOVE_MAX 1250
-#define U_MOUSE_SCROLL_MAX 30
-
-#undef MOVE_UP
-#undef MOVE_DOWN
-#undef MOVE_LEFT
-#undef MOVE_RIGHT
-#define MOVE_UP MOVE_VERT(-U_MOUSE_MOVE_MAX)
-#define MOVE_DOWN MOVE_VERT(U_MOUSE_MOVE_MAX)
-#define MOVE_LEFT MOVE_HOR(-U_MOUSE_MOVE_MAX)
-#define MOVE_RIGHT MOVE_HOR(U_MOUSE_MOVE_MAX)
-
 / {
     keymap {
         compatible = "zmk,keymap";
@@ -96,18 +71,6 @@
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
         };
 	
-	
-	
-	
-                mouse {
-                        bindings = <
-&trans    &trans  &trans  &trans  &trans  &trans                  &trans  &trans &trans &trans  &trans &trans 
-&trans	  &trans  &trans  &trans  &trans  &trans                  &mmv MOVE_HOR(-3000)  &trans &trans &trans  &trans &trans 
-&trans    &trans  &trans  &trans  &trans  &trans                  &trans  &trans &trans &trans  &trans &trans 
-&trans    &trans  &trans  &trans  &trans  &trans  &trans   &trans &trans  &trans &trans &trans  &trans &trans
-                    &trans    &trans      &trans    &trans    &trans   &trans &trans    &trans   &trans          &trans
-                        >;
-                };
     };
     
 };
@@ -132,6 +95,12 @@
 		chain-length = <35>; /* number of LEDs */
 		spi-one-frame = <0x70>;
 		spi-zero-frame = <0x40>;
+	};
+	
+	pim447_trackball@a {
+		compatible = "pimoroni,pim447_trackball";
+		reg = <0xa>;
+		label = "PIM447_TRACKBALL";
 	};
 };
 / {

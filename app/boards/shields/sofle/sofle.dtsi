@@ -87,9 +87,9 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
         prechargep = <0x22>;
     };
     
-	pim447_trackball@a {
+	pim447_trackball@0 {
 		compatible = "pimoroni,pim447_trackball";
-		reg = <0xa>;
+		reg = <0x0>;
 		label = "PIM447_TRACKBALL";
 	};
 };
@@ -118,9 +118,9 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
 	};
 	
 	
-	pim447_trackball@a {
+	pim447_trackball@0 {
 		compatible = "pimoroni,pim447_trackball";
-		reg = <0xa>;
+		reg = <0x0>;
 		label = "PIM447_TRACKBALL";
 	};
 };

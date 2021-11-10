@@ -42,7 +42,7 @@ static void thread_code(void *p1, void *p2, void *p3)
 
     /* PIM447 trackball initialization. */
 
-    char *label = null;
+    char *label = 'a';
       *label =  DT_LABEL(DT_INST(0, pimoroni_pim447_trackball));
     dev = device_get_binding(label);
     if (dev == NULL) {

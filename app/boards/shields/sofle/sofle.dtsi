@@ -88,11 +88,6 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
     };
 };
 
-	pim447_trackball@a {
-		compatible = "pimoroni,pim447_trackball";
-		reg = <0xa>;
-		label = "PIM447_TRACKBALL";
-	};
 
 &spi1 {
 	compatible = "nordic,nrf-spim";
@@ -114,6 +109,11 @@ RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5) RC(4,5) RC(4,6) RC(3,6) RC(3,7) 
 		chain-length = <11>; /* number of LEDs */
 		spi-one-frame = <0x70>;
 		spi-zero-frame = <0x40>;
+	};
+	pim447_trackball@a {
+		compatible = "pimoroni,pim447_trackball";
+		reg = <0xa>;
+		label = "PIM447_TRACKBALL";
 	};
 };
 / {

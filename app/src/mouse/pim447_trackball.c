@@ -8,6 +8,9 @@
 #include <devicetree.h>
 #include <zmk/mouse.h>
 
+
+#include <drivers/i2c.h>
+
 #include <drivers/sensor.h>
 #include <logging/log.h>
 

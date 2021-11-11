@@ -50,6 +50,8 @@ static void thread_code(void *p1, void *p2, void *p3)
         LOG_ERR("Cannot get PIM447_TRACKBALL device");
         return;
     }
+    
+     LOG_ERR(dev);
 
     /* Event loop. */
 

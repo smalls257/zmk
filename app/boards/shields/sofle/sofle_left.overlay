@@ -55,9 +55,9 @@
         com-sequential;
         prechargep = <0x22>;
     };
-	pim447_trackball@A {
+	pim447_trackball@a {
 		compatible = "pimoroni,pim447_trackball";
-		reg = <0x0A>;
+		reg = <0x0a>;
 		label = "PIM447_TRACKBALL";
 	};
 };

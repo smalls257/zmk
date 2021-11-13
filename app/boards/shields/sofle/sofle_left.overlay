@@ -17,6 +17,50 @@
 		;
 };
 
+&spi1 {
+	compatible = "nordic,nrf-spim";
+	status = "okay";
+	mosi-pin = <6>;
+	// Unused pins, needed for SPI definition, but not used by the ws2812 driver itself.
+	sck-pin = <5>;
+	miso-pin = <7>;
+
+	led_strip: ws2812@0 {
+		compatible = "worldsemi,ws2812-spi";
+		label = "WS2812";
+
+		/* SPI */
+		reg = <0>; /* ignored, but necessary for SPI bindings */
+		spi-max-frequency = <4000000>;
+
+		/* WS2812 */
+		chain-length = <11>; /* number of LEDs */
+		spi-one-frame = <0x70>;
+		spi-zero-frame = <0x40>;
+	};
+	
+	
+    ssd1306@3c {
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
+        label = "DISPLAY";
+        width = <128>;
+        height = <32>;
+        segment-offset = <0>;
+        page-offset = <0>;
+        display-offset = <0>;
+        multiplex-ratio = <31>;
+        segment-remap;
+        com-invdir;
+        com-sequential;
+        prechargep = <0x22>;
+    };
+	pim447_trackball@A {
+		compatible = "pimoroni,pim447_trackball";
+		reg = <0x0A>;
+		label = "PIM447_TRACKBALL";
+	};
+};
 &left_encoder {
 	status = "okay";
 };

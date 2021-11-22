@@ -42,7 +42,6 @@ static int pim447_trackball_read_reg(const struct device *dev,
                                    reg, value);
     if (status < 0) {
         LOG_ERR("Sensor reg read byte failed");
-        return status;
     }
 
     return 0;

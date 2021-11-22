@@ -7,8 +7,6 @@
 #include <drivers/sensor.h>
 #include <logging/log.h>
 
-#include <drivers/i2c.h>
-
 LOG_MODULE_REGISTER(PIM447, CONFIG_SENSOR_LOG_LEVEL);
 
 /*
@@ -44,12 +42,26 @@ static void thread_code(void *p1, void *p2, void *p3)
 
     /* PIM447 trackball initialization. */
 
-   const char *label = DT_LABEL(DT_INST(0, pimoroni_pim447_trackball));
-    dev = device_get_binding(label);
-    if (dev == NULL) {
-        LOG_ERR("Cannot get PIM447_TRACKBALL device");
-        return;
+    const char *label = DT_LABEL(DT_INST(0, pimoroni_pim447_trackball));
+    
+    int i = 0;
+    
+    while (i <30)
+    {
+        dev = device_get_binding(label);
+        
+        if (dev == NULL) {
+            LOG_ERR("Cannot get PIM447_TRACKBALL device");
+        }
+        
+        k_sleep(K_MSEC(1000));
+        i++;
     }
+    
+    if (dev == NULL) {
+            LOG_ERR("Cannot get PIM447_TRACKBALL device");
+        return;
+        }
 
     /* Event loop. */
 

@@ -40,8 +40,9 @@ static int pim447_trackball_read_reg(const struct device *dev,
 
     int status = i2c_reg_read_byte(data->i2c_dev, DT_INST_REG_ADDR(0),
                                    reg, value);
-    if (status < 0) {
+ if (status < 0) {
         LOG_ERR("Sensor reg read byte failed");
+        return status;
     }
 
     return 0;

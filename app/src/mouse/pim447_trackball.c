@@ -87,11 +87,20 @@ static void thread_code(void *p1, void *p2, void *p3)
 
     /* PIM447 trackball initialization. */
 
-    const char *label = DT_LABEL(DT_INST(0, pimoroni_trackball_pim447));
-    dev = device_get_binding(label);
-    if (dev == NULL) {
-        LOG_ERR("Cannot get TRACKBALL_PIM447 device");
-        return;
+  const char *label = DT_LABEL(DT_INST(0, pimoroni_pim447_trackball));
+
+    int i = 0;
+
+    while (i <30)
+    {
+        dev = device_get_binding(label);
+
+        if (dev == NULL) {
+            LOG_ERR("Cannot get PIM447_TRACKBALL device");
+        }
+
+        k_sleep(K_MSEC(1000));
+        i++;
     }
 
     /* Event loop. */

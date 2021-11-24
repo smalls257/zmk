@@ -74,12 +74,14 @@ static void thread_code(void *p1, void *p2, void *p3)
         struct sensor_value pos_dx, pos_dy, pos_dz;
         bool send_report = false;
 
+        /*
         result = sensor_sample_fetch(dev);
         if (result < 0) {
             LOG_ERR("Failed to fetch PIM447_TRACKBALL sample");
             i++;
             continue;
         }
+        */
 
         result = sensor_channel_get(dev, SENSOR_CHAN_POS_DX, &pos_dx);
         if (result < 0) {

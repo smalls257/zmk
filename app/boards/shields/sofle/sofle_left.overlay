@@ -45,12 +45,6 @@
 		spi-one-frame = <0x70>;
 		spi-zero-frame = <0x40>;
 	};
-	
-	pim447_trackball@b {
-		compatible = "pimoroni,pim447_trackball";
-		reg = <0x0b>;
-		label = "PIM447_TRACKBALL";
-	};
 };
 &left_encoder {
 	status = "okay";
